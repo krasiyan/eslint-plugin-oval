@@ -1,7 +1,7 @@
 {
-  "name": "eslint-plugin-riot",
-  "version": "0.1.7",
-  "description": "eslint plugin to lint javascript in riot tag.",
+  "name": "eslint-plugin-oval",
+  "version": "0.0.0",
+  "description": "eslint plugin to lint javascript in organic-oval tag files",
   "main": "src/index.js",
   "scripts": {
     "test": "tape test/**/*.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/txchen/eslint-plugin-riot.git"
+    "url": "git+https://github.com/krasiyan/eslint-plugin-oval.git"
   },
   "keywords": [
     "eslint",
@@ -18,12 +18,12 @@
     "lint",
     "linter"
   ],
-  "author": "Tianxiang Chen",
+  "author": "Krasiyan Nedelchev (forked from Tianxiang Chen)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/txchen/eslint-plugin-riot/issues"
+    "url": "https://github.com/krasiyan/eslint-plugin-oval/issues"
   },
-  "homepage": "https://github.com/txchen/eslint-plugin-riot#readme",
+  "homepage": "https://github.com/krasiyan/eslint-plugin-oval#readme",
   "devDependencies": {
     "eslint": "^1.6.0",
     "tape": "^4.2.1"

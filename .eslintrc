@@ -1,4 +1,9 @@
 {
+
+  "globals": {
+    "tag": true
+  },
+
   "ecmaFeatures": {
     "modules": true
   },

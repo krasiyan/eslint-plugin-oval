@@ -19,11 +19,6 @@ function extract(code) {
         return
       }
 
-      // test if current type is javascript
-      if (attrs.type && ['es6', 'babel', 'javascript'].indexOf(attrs.type.toLowerCase().replace('text/', '')) < 0) {
-        return
-      }
-
       if (finished) {
         return
       }
