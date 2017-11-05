@@ -20,6 +20,13 @@ var tagProcessor = {
 }
 
 module.exports = {
+  environments: {
+    env: {
+      globals: {
+        tag: true
+      }
+    }
+  },
   processors: {
     '.html': tagProcessor,
     '.tag': tagProcessor

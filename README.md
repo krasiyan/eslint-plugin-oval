@@ -11,11 +11,14 @@ Install the plugin:
 npm install --save-dev eslint-plugin-oval
 ```
 
-Add it to your `.eslintrc`:
+Configuring your `.eslintrc`:
 
 ```json
 {
-  "plugins": ["oval"]
+  "plugins": ["oval"],
+},
+"env": {
+  "oval/env": true
 }
 ```
 
