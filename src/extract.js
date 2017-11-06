@@ -7,25 +7,28 @@ function extract(code) {
   var scriptCode = ''
   var tagExpressions = []
   var tagStartLineNum = 0
-  var finished = false
   var inScript = false
   var indent
   var indentRegex
 
   var parser = new htmlparser.Parser({
-
     onopentag: function(name, attrs) {
       // test if current tag is a valid <script> tag.
-      if (name !== 'script') {
-        return
+      if (name === 'script') {
+        inScript = true
+        tagStartLineNum = code.slice(0, parser.endIndex).match(/\r\n|\n|\r/g).length + 1
+      } else {
+        var jsRegex = new RegExp(/\{([^}]+)\}/, 'gm')
+        var matchedExpressions = code.slice(parser.startIndex, parser.endIndex).trim().match(jsRegex)
+        if (!matchedExpressions) return
+        matchedExpressions.forEach(function (matchedExpression) {
+          tagExpressions.push({
+            code: matchedExpression.substring(1, matchedExpression.length - 1) + '\n',
+            indent: 0,
+            line: code.slice(0, parser.endIndex).match(/\r\n|\n|\r/g).length + 1
+          })
+        })
       }
-
-      if (finished) {
-        return
-      }
-
-      inScript = true
-      tagStartLineNum = code.slice(0, parser.endIndex).match(/\r\n|\n|\r/g).length + 1
     },
 
     onclosetag: function(name) {
@@ -33,7 +36,6 @@ function extract(code) {
         return
       }
       inScript = false
-      finished = true
     },
 
     ontext: function(data) {
@@ -49,11 +51,15 @@ function extract(code) {
           return line
         })
       } else {
-        var jsRegex = new RegExp('\{([^}]+)\}', 'gm')
+        var jsRegex = new RegExp(/\{([^}]+)\}/, 'gm')
         var matchedExpressions = data.trim().match(jsRegex)
         if (!matchedExpressions) return
         matchedExpressions.forEach(function (matchedExpression) {
-          tagExpressions.push(matchedExpression.substring(1, matchedExpression.length - 1))
+          tagExpressions.push({
+            code: matchedExpression.substring(1, matchedExpression.length - 1) + '\n',
+            indent: 0,
+            line: code.slice(0, parser.endIndex).match(/\r\n|\n|\r/g).length + 1
+          })
         })
       }
     }
@@ -66,14 +72,9 @@ function extract(code) {
   }
   // trim the last line's ending spaces
   scriptCode = scriptCode.replace(/[ \t]*$/, '')
-  if (tagExpressions.length > 0) {
-    tagExpressions.forEach((tagExpression) => {
-      scriptCode += '\n' + tagExpression + ' // eslint-disable-line no-unused-expressions'
-    })
-    scriptCode += '\n'
-  }
+  console.log(JSON.stringify(tagExpressions, null, 2))
 
-  return { code: scriptCode, line: tagStartLineNum, indent: indent }
+  return [{ code: scriptCode, line: tagStartLineNum, indent: indent }].concat(tagExpressions)
 }
 
 module.exports = extract

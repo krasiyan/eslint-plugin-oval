@@ -2,20 +2,23 @@
 
 var extract = require('./extract')
 
-var blockInfo // code, line, indent
+var blocksInfo = [] // code, line, indent
 
 var tagProcessor = {
   preprocess: function(content) {
-    blockInfo = extract(content)
-    return [blockInfo.code]
+    blocksInfo = extract(content)
+    return blocksInfo.map((blockInfo) => blockInfo.code)
   },
-
   postprocess: function(messages, filename) {
-    messages[0].forEach(function(message) {
-      message.column += blockInfo.indent
-      message.line += (blockInfo.line - 1)
+    var messagesToReturn = []
+    messages.forEach(function (messageErrors, messageIdx) {
+      messageErrors.forEach(function (messageError, messageErrIdx) {
+        messageError.column += blocksInfo[messageIdx].indent
+        messageError.line += (blocksInfo[messageIdx].line - 1)
+        messagesToReturn.push(messageError)
+      })
     })
-    return messages[0]
+    return messagesToReturn
   }
 }
 
@@ -24,7 +27,8 @@ module.exports = {
     recommended: {
       plugins: ['oval'],
       rules: {
-        'no-unused-vars': [0]
+        'no-unused-vars': [0],
+        'no-unused-expressions': [0]
       },
       globals: {
         tag: true
