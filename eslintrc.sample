@@ -1,0 +1,26 @@
+{
+  "rules": {
+    "comma-dangle": [0],
+    "camelcase": [0],
+    "no-useless-escape": [0],
+    "no-path-concat": [0],
+    "radix": [1, "always"],
+    "indent": ["error", 2, {"SwitchCase": 1, "MemberExpression": "off"}]
+  },
+  "plugins": ["oval"],
+  "extends": ["standard", "plugin:oval/recommended"],
+  "globals": {
+    "describe": true,
+    "before": true,
+    "after": true,
+    "beforeEach": true,
+    "afterEach": true,
+    "it": true,
+    "test": true,
+    "expect": true,
+    "xit": true,
+    "xdescribe": true,
+    "oval": true,
+    "fetch": true
+  }
+}

@@ -5,6 +5,7 @@ var htmlparser = require('htmlparser2')
 function extract(code) {
 
   var scriptCode = ''
+  var tagExpressions = []
   var tagStartLineNum = 0
   var finished = false
   var inScript = false
@@ -36,22 +37,26 @@ function extract(code) {
     },
 
     ontext: function(data) {
-      if (!inScript) {
-        return
-      }
+      if (inScript) {
+        if (!indent) {
+          var spaces = /^[\n\r]*(\s*)/.exec(data)[1]
+          indentRegex = new RegExp('^(?:' + spaces + ')?(.*)', 'gm')
+          indent = spaces.length
+        }
 
-      if (!indent) {
-        var spaces = /^[\n\r]*(\s*)/.exec(data)[1]
-        indentRegex = new RegExp('^(?:' + spaces + ')?(.*)', 'gm')
-        indent = spaces.length
+        // dedent code
+        scriptCode += data.replace(indentRegex, function(_, line) {
+          return line
+        })
+      } else {
+        var jsRegex = new RegExp('\{([^}]+)\}', 'gm')
+        var matchedExpressions = data.trim().match(jsRegex)
+        if (!matchedExpressions) return
+        matchedExpressions.forEach(function (matchedExpression) {
+          tagExpressions.push(matchedExpression.substring(1, matchedExpression.length - 1))
+        })
       }
-
-      // dedent code
-      scriptCode += data.replace(indentRegex, function(_, line) {
-        return line
-      })
     }
-
   })
 
   parser.parseComplete(code)
@@ -61,6 +66,13 @@ function extract(code) {
   }
   // trim the last line's ending spaces
   scriptCode = scriptCode.replace(/[ \t]*$/, '')
+  if (tagExpressions.length > 0) {
+    tagExpressions.forEach((tagExpression) => {
+      scriptCode += '\n' + tagExpression + ' // eslint-disable-line no-unused-expressions'
+    })
+    scriptCode += '\n'
+  }
+
   return { code: scriptCode, line: tagStartLineNum, indent: indent }
 }
 
